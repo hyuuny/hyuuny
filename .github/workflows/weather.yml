@@ -40,5 +40,5 @@ jobs:
           git config user.email "shyune@knou.ac.kr"
           git add README.md
           DATE=$(TZ=Asia/Seoul date "+%Y-%m-%d")
-          git commit --amend -m "update: ${DATE} 서울 날씨" || echo "No changes to commit"
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main --force
+          git commit -m "update: ${DATE} 서울 날씨" || echo "No changes to commit"
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
