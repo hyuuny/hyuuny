@@ -1,46 +1,46 @@
-#name: Daily Weather Commit
-#
-#on:
-#  schedule:
-#    - cron: '0 0 * * *'
-#  workflow_dispatch:
-#
-#jobs:
-#  update-weather:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v3
-#        with:
-#          persist-credentials: false
-#
-#      - name: Update timestamp
-#        run: date "+%Y-%m-%d %H:%M:%S" > timestamp.txt
-#
-#      - name: Fetch weather and update README
-#        run: |
-#          CITY="Seoul"
-#          API_KEY=${{ secrets.WEATHER_API_KEY }}
-#          RESPONSE=$(curl -s "https://api.openweathermap.org/data/2.5/weather?q=$CITY&appid=$API_KEY&units=metric&lang=kr")
-#
-#          WEATHER=$(echo "$RESPONSE" | jq -r '.weather[0].description')
-#          TEMP=$(echo "$RESPONSE" | jq -r '.main.temp')
-#          FEELS=$(echo "$RESPONSE" | jq -r '.main.feels_like')
-#          DATE=$(TZ=Asia/Seoul date "+%Y-%m-%d %H:%M:%S")
-#
-#          WEATHER_INFO="🗓️ $DATE<br>🌤️ 날씨: $WEATHER<br>🌡️ 온도: ${TEMP}°C (체감 ${FEELS}°C)"
-#          ESCAPED_WEATHER_INFO=$(echo "$WEATHER_INFO" | sed 's/[&/\]/\\&/g')
-#
-#          sed -i "/<!-- weather-start -->/,/<!-- weather-end -->/c\\<!-- weather-start -->\n$ESCAPED_WEATHER_INFO\n<!-- weather-end -->" README.md
-#
-#      - name: Commit & push
-#        env:
-#          GH_PAT: ${{ secrets.GH_PAT }}
-#        run: |
-#          git config user.name "hyuuny"
-#          git config user.email "shyune@knou.ac.kr"
-#          git add README.md timestamp.txt
-#          DATE=$(TZ=Asia/Seoul date "+%Y-%m-%d")
-#          git commit -m "update: ${DATE} 서울 날씨"
-#          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
+name: Daily Weather Commit
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-weather:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Update timestamp
+        run: date "+%Y-%m-%d %H:%M:%S" > timestamp.txt
+
+      - name: Fetch weather and update README
+        run: |
+          CITY="Seoul"
+          API_KEY=${{ secrets.WEATHER_API_KEY }}
+          RESPONSE=$(curl -s "https://api.openweathermap.org/data/2.5/weather?q=$CITY&appid=$API_KEY&units=metric&lang=kr")
+
+          WEATHER=$(echo "$RESPONSE" | jq -r '.weather[0].description')
+          TEMP=$(echo "$RESPONSE" | jq -r '.main.temp')
+          FEELS=$(echo "$RESPONSE" | jq -r '.main.feels_like')
+          DATE=$(TZ=Asia/Seoul date "+%Y-%m-%d %H:%M:%S")
+
+          WEATHER_INFO="🗓️ $DATE<br>🌤️ 날씨: $WEATHER<br>🌡️ 온도: ${TEMP}°C (체감 ${FEELS}°C)"
+          ESCAPED_WEATHER_INFO=$(echo "$WEATHER_INFO" | sed 's/[&/\]/\\&/g')
+
+          sed -i "/<!-- weather-start -->/,/<!-- weather-end -->/c\\<!-- weather-start -->\n$ESCAPED_WEATHER_INFO\n<!-- weather-end -->" README.md
+
+      - name: Commit & push
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "hyuuny"
+          git config user.email "shyune@knou.ac.kr"
+          git add README.md timestamp.txt
+          DATE=$(TZ=Asia/Seoul date "+%Y-%m-%d")
+          git commit -m "update: ${DATE} 서울 날씨"
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
